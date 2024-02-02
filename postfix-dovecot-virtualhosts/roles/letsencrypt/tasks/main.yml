@@ -1,0 +1,11 @@
+---
+# tasks file for letsencrypt
+- name: Install Certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: Install Certbot Nginx
+  apt:
+    name: python3-certbot-nginx
+    state: present

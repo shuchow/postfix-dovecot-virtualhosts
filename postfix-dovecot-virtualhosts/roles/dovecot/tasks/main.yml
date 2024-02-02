@@ -1,0 +1,75 @@
+---
+# tasks file for roles/Dovecot
+- include_vars: ../../../global-vault.yml
+
+- name: Install Dovecot
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - dovecot-core
+    - dovecot-imapd
+    - dovecot-lmtpd
+    - dovecot-mysql
+
+- name: Copy the main configuration file over.
+  copy:
+    src: "{{ role_path }}/files/dovecot.conf"
+    dest: /etc/dovecot
+    group: root
+    mode: '0644'
+
+- name: Copy the main 10-mail.conf file over.
+  copy:
+    src: "{{ role_path }}/files/10-mail.conf"
+    dest: /etc/dovecot/conf.d
+    group: root
+    mode: '0644'
+
+- name: Copy the main 10-auth.conf
+  copy:
+    src: "{{ role_path }}/files/10-auth.conf"
+    dest: /etc/dovecot/conf.d
+    group: root
+    mode: '0644'
+
+- name: Copy the 20-lmtp.conf
+  copy:
+    src: "{{ role_path }}/files/20-lmtp.conf"
+    dest: /etc/dovecot/conf.d
+    group: root
+    mode: '0644'
+
+- name: Copy the main auth-sql.conf.ext
+  copy:
+    src: "{{ role_path }}/files/auth-sql.conf.ext"
+    dest: /etc/dovecot/conf.d
+    group: root
+    mode: '0644'
+
+- name: Copy the main dovecot-sql.conf.ext
+  copy:
+    src: "{{ role_path }}/files/dovecot-sql.conf.ext"
+    dest: /etc/dovecot/
+    group: dovecot
+    mode: '0640'
+
+- name: Copy the main 10-master.conf
+  copy:
+    src: "{{ role_path }}/files/10-master.conf"
+    dest: /etc/dovecot/conf.d
+    group: root
+    mode: '0644'
+
+- name: Move the ssl-sni.conf template over
+  ansible.builtin.template:
+    src: templates/ssl-sni.j2
+    dest: /etc/dovecot/conf.d/ssl-sni.conf
+
+- name: Reload the Dovecot service.
+  ansible.builtin.service:
+    name: dovecot
+    state: restarted
+
+- name: Tell Postfix to deliver emails to Dovecot using LMTP
+  ansible.builtin.command: postconf virtual_transport=lmtp:unix:private/dovecot-lmtp

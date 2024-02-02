@@ -1,0 +1,6 @@
+---
+gandi_token: //Gandi API Token.
+db_user: //Database user
+db_password: //Database password
+db_name: //Name of the database.
+db_host: //Host server of the database.

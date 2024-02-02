@@ -1,0 +1,13 @@
+---
+- hosts: myserver
+  remote_user: ansible
+  become: true
+  gather_facts: true
+  roles:
+    - upgrade_debian
+    - python3
+    - mariadb
+    - letsencrypt
+    - custom_wildcard_certs
+    - postfix
+    - dovecot

@@ -1,0 +1,94 @@
+---
+# tasks file for roles/fail2ban
+- include_vars: ../../../global-vault.yml
+
+- name: Install Postfix
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postfix
+    - postfix-mysql
+    - mailutils
+
+- name: Set up /etc/mailname
+  shell: "echo {{ hostname }} > /etc/mailname"
+  args:
+    executable: /bin/bash
+
+- name: Ensure group "virtualmail" exists with correct gid that matches the one in main.cf
+  ansible.builtin.group:
+    name: virtualmail
+    state: present
+    gid: 2000
+
+- name: Add the user "virtualmail" with a specific uid in main.cf and a primary group of "virtualmail"
+  ansible.builtin.user:
+    name: virtualmail
+    uid: 2000
+    group: virtualmail
+    home: /var/spool/vmail
+
+- name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: /var/spool/vmail
+    owner: virtualmail
+    group: virtualmail
+    mode: '0755'
+
+- name: Copy the main configuration file over.
+  copy:
+    src: "{{ role_path }}/files/main.cf"
+    dest: /etc/postfix
+    group: postfix
+    mode: '0644'
+
+- name: Move the virtual_domains template file.
+  ansible.builtin.template:
+    src: "templates/mysql-virtual_domains.j2"
+    dest: /etc/postfix/mysql-virtual_domains.cf
+    group: postfix
+    mode: '0640'
+
+- name: Move the virtual_email2email template file.
+  ansible.builtin.template:
+    src: "templates/mysql-virtual_email2email.j2"
+    dest: /etc/postfix/mysql-virtual_email2email.cf
+    group: postfix
+    mode: '0640'
+
+- name: Move the virtual_forwardings template file.
+  ansible.builtin.template:
+    src: "templates/mysql-virtual_forwardings.j2"
+    dest: /etc/postfix/mysql-virtual_forwardings.cf
+    group: postfix
+    mode: '0640'
+
+- name: Move the virtual_mailbox_limit_maps template file.
+  ansible.builtin.template:
+    src: "templates/mysql-virtual_mailbox_limit_maps.j2"
+    dest: /etc/postfix/mysql-virtual_mailbox_limit_maps.cf
+    group: postfix
+    mode: '0640'
+
+- name: Move the virtual_mailboxes template file.
+  ansible.builtin.template:
+    src: "templates/mysql-virtual_mailboxes.j2"
+    dest: /etc/postfix/mysql-virtual_mailboxes.cf
+    group: postfix
+    mode: '0640'
+
+- name: Move the virtual_transports template file.
+  copy:
+    src: "templates/virtual_transports.j2"
+    dest: /etc/postfix/virtual_transports.cf
+    group: postfix
+    mode: '0640'
+
+- name: Run postfix reload.
+  ansible.builtin.command: postfix reload
+
+- name: Reload the postfix service.
+  ansible.builtin.service:
+    name: postfix
+    state: restarted

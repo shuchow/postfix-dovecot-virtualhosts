@@ -1,0 +1,43 @@
+---
+- include_vars: vault.yml
+
+- name: Install MariaDB
+  apt:
+    name: mariadb-server
+    state: present
+
+- name: Install MariaDB Client Libs
+  apt:
+    name: libmariadb-dev
+    state: present
+
+- name: Install Python Libraries
+  apt:
+    name: python3-mysqldb
+    state: present
+
+- name: start mysql server and enable it on reboot
+  service: name=mariadb state=started enabled=true #debian: mysql 
+
+- name: update mysql root password for all root accounts
+  mysql_user:  
+    name: root
+    host: "{{ item }}"
+    password: "{{ vault_mysql_root_password }}"
+    login_password: "{{ vault_mysql_root_password }}"
+    check_implicit_admin: yes
+    state: present
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1
+    
+- name: Reload privilege tables
+  command: 'mysql -u root -p{{ vault_mysql_root_password }} -ne "{{ item }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  changed_when: False
+
+# tasks file for mariadb
+- debug:
+    msg: "The password is {{ vault_mysql_root_password }}"

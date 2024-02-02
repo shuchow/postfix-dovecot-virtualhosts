@@ -1,0 +1,68 @@
+---
+# tasks file for custom_wildcard_certs
+
+- name: install pip3
+  apt: name=python3-pip state=present
+
+# GANDI DOMAINS
+# https://github.com/obynio/certbot-plugin-gandi
+- name: Install Gandi Certbot Plugin
+  ansible.builtin.pip:
+    name: certbot-plugin-gandi
+
+- name: Move the gandi init file
+  ansible.builtin.template:
+    src: templates/gandi.j2
+    dest: "{{ letsencrypt_dir }}/gandi.ini"
+    mode: "600"
+
+- name: Move the ssl-sni.conf template over
+  ansible.builtin.template:
+    src: templates/ssl-sni.j2
+    dest: /etc/dovecot/conf.d/ssl-sni.conf
+
+- name: Debug
+  ansible.builtin.debug:
+    msg: System {{ acme_email }}
+
+- name: "Fire off Certbot to auto generate"
+  shell: "certbot certonly -n --expand --authenticator dns-gandi --dns-gandi-credentials {{ letsencrypt_dir }}/gandi.ini -d {{ item.domain }} -d *.{{ item.domain }} --server {{ acme_directory }} --email {{ acme_email }} -n --agree-tos"
+  args:
+    executable: /bin/bash
+  loop: "{{ wildcard_domains }}"
+  when: item.registrar == "gandi" and item.enabled == true
+
+- name: Certbot to cronjob
+  ansible.builtin.cron:
+    name: "Weekly check to renew certbot"
+    minute: "0"
+    hour: "11"
+    weekday: "6"
+    job: "certbot renew -q --authenticator dns-gandi --dns-gandi-credentials {{ letsencrypt_dir }}/gandi.ini --server {{ acme_directory }}"
+
+
+# ROUTE 53 DOMAINS
+# More or less here:  https://santoshk.dev/posts/2021/wildcard-domain-certificate-using-aws-route53-and-lets-encrypt/
+# Create policy using the above.  One policy per domain aka hostedzone.
+# Attach policy to the certbot-route53 user.
+# The user's creds are in /root/.aws
+
+- name: Install Route53 Certbot Plugin
+  ansible.builtin.pip:
+    name: certbot_dns_route53
+
+- name: "Fire off Certbot to auto generate Route 53 Domains"
+  shell: "certbot certonly --dns-route53 -m '{{ acme_email }}' -d '{{ item.domain }}' -d '*.{{ item.domain }}' --agree-tos -n"
+  args:
+    executable: /bin/bash
+  loop: "{{ wildcard_domains }}"
+  when: item.registrar == "route53" and item.enabled == true
+
+- name: Certbot to cronjob
+  ansible.builtin.cron:
+    name: "Weekly check to renew certbot Route53"
+    minute: "0"
+    hour: "11"
+    weekday: "4"
+    job: "certbot renew"
+

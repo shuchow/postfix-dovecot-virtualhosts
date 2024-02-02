@@ -1,0 +1,10 @@
+acme_directory: https://acme-v02.api.letsencrypt.org/directory
+acme_version: 2
+acme_email: you@example.com
+letsencrypt_dir: /etc/letsencrypt
+hostname: hostserver.com
+wildcard_domains:
+  - { domain: "exampleone.com", enabled: true, registrar: "gandi" }
+  - { domain: "exampletwo.com", enabled: true, registrar: "gandi" }
+  - { domain: "examplethree.com", enabled: true, registrar: "route53" }
+

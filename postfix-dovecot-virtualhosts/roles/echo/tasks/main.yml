@@ -1,0 +1,10 @@
+---
+# tasks file for roles/echo
+
+- debug:
+    msg: "Hello World: {{ foo }}"
+
+- name: Test file making
+  file:
+    path: "/home/pi/testfile.txt"
+    state: touch

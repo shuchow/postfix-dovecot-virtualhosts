@@ -1,0 +1,8 @@
+---
+# tasks file for upgrade_debian
+- name: Apt-cache update
+  become: true
+  apt:
+    force_apt_get: yes
+    update_cache: yes
+    upgrade: yes

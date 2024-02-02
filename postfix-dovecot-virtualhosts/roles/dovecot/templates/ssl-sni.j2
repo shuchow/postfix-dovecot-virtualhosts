@@ -1,0 +1,10 @@
+{% for domain in wildcard_domains %}
+    {%+ if domain.mail_enabled %}
+
+local_name mail.{{ domain.domain }} {
+    ssl_cert = </etc/letsencrypt/live/{{ domain.domain }}/fullchain.pem
+    ssl_key = </etc/letsencrypt/live/{{ domain.domain }}/privkey.pem
+}
+
+    {% endif %}
+{% endfor %}

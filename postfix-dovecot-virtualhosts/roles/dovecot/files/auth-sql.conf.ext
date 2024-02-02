@@ -1,0 +1,8 @@
+passdb {
+  driver = sql
+  args = /etc/dovecot/dovecot-sql.conf.ext
+}
+userdb {
+  driver = static
+  args = uid=virtualmail gid=virtualmail home=/var/spool/vmail/%d/%n
+}
