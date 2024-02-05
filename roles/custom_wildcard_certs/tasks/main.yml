@@ -1,5 +1,6 @@
 ---
 # tasks file for custom_wildcard_certs
+- include_vars: ../../../global-vault.yml
 
 - name: install pip3
   apt: name=python3-pip state=present
@@ -15,11 +16,6 @@
     src: templates/gandi.j2
     dest: "{{ letsencrypt_dir }}/gandi.ini"
     mode: "600"
-
-- name: Move the ssl-sni.conf template over
-  ansible.builtin.template:
-    src: templates/ssl-sni.j2
-    dest: /etc/dovecot/conf.d/ssl-sni.conf
 
 - name: Debug
   ansible.builtin.debug:

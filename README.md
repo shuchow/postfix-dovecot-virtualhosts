@@ -19,13 +19,15 @@ This playbook will set up email accounts for multiple domains on one IMAP server
 5. Basic Linux administration including Ansible.
  
 # Things You Need to Do
-1. Set up an Ansible Vault with secrets.  See "Setting up the Vault" below.
+1. This repo stores all sensitive data in a centralized encrypted vault.  See "Setting up the Vault" below.
 
-2. Modify host_vars/hostserver.com.yml.  See "Setting up Your Hostvars."  This is where your domains are stored.
+2. Modify hosts and host_vars/hostserver.com.yml.  See "Setting up Your Hosts."  This is where your domains are stored.
 
-3. Set up a database and give a user permissions on it.  An SQL file is included in this repo to set up the database, but remember to set up a user/password and give the user SELECT privileges on it.
+3. Add the hosts to host_vars/hostserver.com.yml.  See "Adding Hosts."
 
-4. Add the following DNS records to each domain:
+4. Set up a database and give a user permissions on it.  An SQL file is included in this repo to set up the database, but remember to set up a user/password and give the user SELECT privileges on it.
+
+5. Add the following DNS records to each domain:
     
     a. root domain ("@") MX record pointing to "10 mail.yourdomain.com" (assuming you're using the mail. convention).
     
@@ -35,10 +37,24 @@ This playbook will set up email accounts for multiple domains on one IMAP server
 ## Setting up the Vault
 1. Edit the global-vault.yml file with the required variables.  If something is not used, like the gandi_token, leave the value blank, but leave the key.
 
+> &mdash;&mdash;&mdash;
+> 
+> gandi_token: //Gandi API Token.
+>
+> db_user: //Database user
+>
+> db_password: //Database password
+>
+> db_name: //Name of the database.
+>
+> db_host: //Host server of the database.
+
 2. Encrypt the file, leaving it in the same directory.
 > ansible-vault encrypt global-vault.yml
 
 ## Setting up Your Hostvars
+
+
 
 # Adding Users and Domains
 

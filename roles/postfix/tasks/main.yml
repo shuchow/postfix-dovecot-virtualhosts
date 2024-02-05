@@ -45,36 +45,36 @@
 
 - name: Move the virtual_domains template file.
   ansible.builtin.template:
-    src: "templates/mysql-virtual_domains.j2"
-    dest: /etc/postfix/mysql-virtual_domains.cf
+    src: "templates/virtual_domains.j2"
+    dest: /etc/postfix/virtual_domains.cf
     group: postfix
     mode: '0640'
 
 - name: Move the virtual_email2email template file.
   ansible.builtin.template:
-    src: "templates/mysql-virtual_email2email.j2"
-    dest: /etc/postfix/mysql-virtual_email2email.cf
+    src: "templates/virtual_email2email.j2"
+    dest: /etc/postfix/virtual_email2email.cf
     group: postfix
     mode: '0640'
 
 - name: Move the virtual_forwardings template file.
   ansible.builtin.template:
-    src: "templates/mysql-virtual_forwardings.j2"
-    dest: /etc/postfix/mysql-virtual_forwardings.cf
+    src: "templates/virtual_forwardings.j2"
+    dest: /etc/postfix/virtual_forwardings.cf
     group: postfix
     mode: '0640'
 
 - name: Move the virtual_mailbox_limit_maps template file.
   ansible.builtin.template:
-    src: "templates/mysql-virtual_mailbox_limit_maps.j2"
-    dest: /etc/postfix/mysql-virtual_mailbox_limit_maps.cf
+    src: "templates/virtual_mailbox_limit_maps.j2"
+    dest: /etc/postfix/virtual_mailbox_limit_maps.cf
     group: postfix
     mode: '0640'
 
 - name: Move the virtual_mailboxes template file.
   ansible.builtin.template:
-    src: "templates/mysql-virtual_mailboxes.j2"
-    dest: /etc/postfix/mysql-virtual_mailboxes.cf
+    src: "templates/virtual_mailboxes.j2"
+    dest: /etc/postfix/virtual_mailboxes.cf
     group: postfix
     mode: '0640'
 

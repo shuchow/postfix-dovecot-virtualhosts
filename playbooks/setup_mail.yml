@@ -6,7 +6,6 @@
   roles:
     - upgrade_debian
     - python3
-    - mariadb
     - letsencrypt
     - custom_wildcard_certs
     - postfix
